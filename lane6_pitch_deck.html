@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lane6 — Investor Pitch Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #09090f;
+    --surface: #111118;
+    --surface2: #16161f;
+    --border: rgba(255,255,255,0.07);
+    --accent: #6C8EFF;
+    --accent2: #A78BFA;
+    --accent3: #34D399;
+    --text: #F0F0F8;
+    --muted: #8888AA;
+    --dim: #444460;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Slide base */
+  .slide {
+    display: none;
+    width: 1100px;
+    max-width: 96vw;
+    min-height: 640px;
+    position: relative;
+    animation: fadeIn 0.45s ease;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Background grid */
+  .deck::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,142,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,142,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* Glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 { width: 500px; height: 500px; background: rgba(108,142,255,0.08); top: -100px; left: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: rgba(167,139,250,0.06); bottom: -80px; right: -80px; }
+
+  /* Slide number */
+  .slide-num {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(108,142,255,0.1); }
+  .nav-dots { display: flex; gap: 6px; align-items: center; }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+
+  /* ─── Typography ─── */
+  .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .title-xl {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 6vw, 80px);
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .title-lg {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 4vw, 54px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .title-md {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 640px;
+  }
+  .italic-highlight {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  /* ─── Cards & Layout ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(108,142,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .card-accent {
+    border-color: rgba(108,142,255,0.25);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* Divider */
+  .divider {
+    width: 48px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin: 18px 0;
+  }
+
+  /* Bullet list */
+  .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .bullet-list li {
+    display: flex;
+    gap: 14px;
+    font-size: 15px;
+    color: rgba(240,240,248,0.85);
+    line-height: 1.55;
+  }
+  .bullet-list li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 8px;
+  }
+  .bullet-list li strong { color: var(--text); font-weight: 600; }
+
+  /* Stat blocks */
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.05em; }
+  .stat-desc { font-size: 13px; color: rgba(240,240,248,0.7); margin-top: 4px; line-height: 1.45; }
+
+  /* Phase steps */
+  .phase { display: flex; gap: 18px; }
+  .phase-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(108,142,255,0.12);
+    border: 1px solid rgba(108,142,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--accent);
+  }
+  .phase-body { display: flex; flex-direction: column; gap: 4px; }
+  .phase-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  .phase-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* Tag pill */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(108,142,255,0.1);
+    border: 1px solid rgba(108,142,255,0.2);
+    border-radius: 100px;
+    padding: 5px 12px;
+  }
+
+  /* Big number callout */
+  .callout {
+    display: flex; align-items: baseline; gap: 8px;
+    font-size: clamp(48px, 5vw, 68px);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .callout-unit { font-size: 0.4em; font-weight: 700; opacity: 0.7; }
+
+  /* Header row */
+  .slide-header { margin-bottom: 36px; }
+
+  /* Founder card */
+  .founder {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .founder-name {
+    font-size: 18px; font-weight: 700; color: var(--text);
+  }
+  .founder-role {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .founder-bio {
+    font-size: 13.5px; color: var(--muted); line-height: 1.65;
+  }
+
+  /* Green accent for traction */
+  .green { color: var(--accent3); }
+  .check-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .check-list li {
+    display: flex; gap: 12px;
+    font-size: 14px; color: rgba(240,240,248,0.85);
+    line-height: 1.5;
+  }
+  .check-list li::before {
+    content: '✓';
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    background: rgba(52,211,153,0.12);
+    border: 1px solid rgba(52,211,153,0.25);
+    color: var(--accent3);
+    font-size: 11px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* Numbered callout */
+  .numbered-item { display: flex; gap: 20px; align-items: flex-start; }
+  .num-badge {
+    flex-shrink: 0;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: rgba(108,142,255,0.1);
+    border: 1px solid rgba(108,142,255,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin-top: 2px;
+  }
+
+  /* Allocation row */
+  .alloc-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 14px;
+  }
+  .alloc-bar-wrap { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .alloc-bar { height: 100%; border-radius: 3px; }
+  .alloc-label { min-width: 200px; color: var(--text); font-weight: 500; }
+  .alloc-pct { min-width: 42px; text-align: right; color: var(--accent); font-weight: 700; font-size: 13px; }
+  .alloc-amt { min-width: 64px; text-align: right; color: var(--muted); font-size: 12px; }
+
+  /* ─── SLIDE-SPECIFIC ─── */
+
+  /* S1 Title */
+  #s1 { justify-content: center; min-height: 620px; }
+  .s1-inner {
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    height: 100%; gap: 0;
+  }
+  .s1-logo {
+    font-size: 13px; font-weight: 800; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 32px;
+  }
+  .s1-tagline {
+    font-size: 16px; color: var(--muted); font-weight: 400;
+    margin-top: 20px; max-width: 560px; line-height: 1.65;
+  }
+  .s1-meta {
+    margin-top: 52px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .s1-meta-row { display: flex; gap: 24px; }
+  .s1-meta-item {
+    font-size: 12px; color: var(--dim); font-weight: 500; letter-spacing: 0.05em;
+  }
+  .s1-meta-item span { color: var(--muted); }
+  .s1-line {
+    width: 1px; height: 220px;
+    position: absolute; right: 60px; top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(180deg, transparent, var(--border), var(--border), transparent);
+  }
+  .s1-accent-text {
+    position: absolute; right: 80px; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--dim);
+    white-space: nowrap;
+  }
+
+  /* Insight slide quote */
+  .quote-block {
+    background: linear-gradient(135deg, rgba(108,142,255,0.06), rgba(167,139,250,0.06));
+    border: 1px solid rgba(108,142,255,0.15);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-size: 15px;
+    color: rgba(240,240,248,0.85);
+    line-height: 1.7;
+  }
+
+  /* Keyboard shortcut hint */
+  .kbd-hint {
+    position: fixed;
+    top: 24px;
+    right: 36px;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+  }
+  .kbd {
+    display: inline-block;
+    border: 1px solid var(--dim);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    color: var(--dim);
+  }
+
+  /* Watermark */
+  .watermark {
+    position: fixed;
+    top: 24px; left: 36px;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* Content z-index */
+  .slide { z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="watermark">LANE6 — CONFIDENTIAL 2025</div>
+<div class="kbd-hint"><kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> to navigate</div>
+
+<div class="deck">
+
+  <!-- SLIDE 1 — Title -->
+  <div class="slide active" id="s1">
+    <div class="s1-inner">
+      <div class="s1-logo">Lane6</div>
+      <div class="title-xl">The AI-Powered<br>Operations Layer<br><span class="italic-highlight">for RIAs.</span></div>
+      <div class="s1-tagline">Built exclusively for registered investment advisors. Not a tool — an infrastructure partner.</div>
+      <div class="s1-meta">
+        <div class="s1-meta-row">
+          <div class="s1-meta-item">Tucker Haluszczak <span>— CEO</span></div>
+          <div class="s1-meta-item">Jake <span>— CRO</span></div>
+        </div>
+        <div class="s1-meta-row">
+          <div class="s1-meta-item">lane6.ai</div>
+          <div class="s1-meta-item">Pre-Seed · 2025</div>
+        </div>
+      </div>
+    </div>
+    <div class="s1-line"></div>
+    <div class="s1-accent-text">Investor Pitch Deck · Confidential</div>
+  </div>
+
+  <!-- SLIDE 2 — Problem -->
+  <div class="slide" id="s2">
+    <div class="slide-header">
+      <div class="label">The Problem</div>
+      <div class="title-lg">RIAs are running $250M+ portfolios<br>on <span class="italic-highlight">spreadsheets</span>.</div>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-2" style="gap:20px; flex:1;">
+      <div class="card card-accent">
+        <div class="stat-label" style="margin-bottom:10px; color:var(--accent);">Operations</div>
+        <div class="title-md" style="font-size:18px; margin-bottom:10px;">2–3 weeks</div>
+        <div class="stat-desc">Client onboarding time. Mostly manual, largely email-based. No automation in sight.</div>
+      </div>
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:10px; color:var(--accent);">Technology</div>
+        <div class="title-md" style="font-size:18px; margin-bottom:10px;">4–6 disconnected tools</div>
+        <div class="stat-desc">Most firms run a fragmented stack with no automation layer connecting any of it.</div>
+      </div>
+      <div class="card">
+        <div class="stat-label" style="margin-bottom:10px; color:var(--accent);">Capacity</div>
+        <div class="title-md" style="font-size:18px; margin-bottom:10px;">30–40% of the week</div>
+        <div class="stat-desc">Advisors spend this on admin. Time that has nothing to do with advising.</div>
+      </div>
+      <div class="card card-accent">
+        <div class="stat-label" style="margin-bottom:10px; color:var(--accent);">Scale</div>
+        <div class="title-md" style="font-size:18px; margin-bottom:10px;">Hire to grow.</div>
+        <div class="stat-desc">To grow AUM, they hire more staff. There is no infrastructure alternative. Until now.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 — Insight -->
+  <div class="slide" id="s3">
+    <div class="slide-header">
+      <div class="label">The Insight</div>
+      <div class="title-lg">AI hasn't changed how RIAs<br>operate. <span class="italic-highlight">It's about to.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:18px; flex:1;">
+      <div class="quote-block">
+        Enterprise firms have teams of engineers to build this infrastructure. Mid-market RIAs don't. They're the last segment of finance where <strong>the gap between what's possible and what's deployed is still massive.</strong> That gap is Lane6's market.
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="stat-label" style="margin-bottom:14px; color:var(--accent2);">The Opportunity</div>
+        <div class="title-md" style="font-size:20px; margin-bottom:14px; color:var(--text);">The firm that wins this segment won't be a SaaS tool.</div>
+        <div class="stat-desc" style="font-size:15px; line-height:1.7;">
+          It'll be the one that goes in, builds the system, and runs it.<br>
+          <span style="color:var(--accent); font-weight:700;">That's the product.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 — Solution -->
+  <div class="slide" id="s4">
+    <div class="slide-header">
+      <div class="label">The Solution</div>
+      <div class="title-lg">Not a tool.<br><span class="italic-highlight">Not a consultant.</span><br>Operations infrastructure.</div>
+      <div class="divider"></div>
+    </div>
+    <div style="font-size:15px; color:var(--muted); margin-bottom:24px; line-height:1.65; max-width:680px;">
+      We embed into RIA firms as a backend system operator — building, automating, and maintaining the operational layer so advisors can focus on clients and AUM growth.
+    </div>
+    <div class="grid-3" style="flex:1;">
+      <div class="card card-accent" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(108,142,255,0.12);border:1px solid rgba(108,142,255,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;">⚙</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);">CRM Architecture</div>
+        <div class="stat-desc">Custom GoHighLevel builds tailored to each firm's workflow and compliance requirements.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;">⚡</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);">Workflow Automation</div>
+        <div class="stat-desc">Onboarding, reporting, and follow-up sequences automated end-to-end.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;">🔗</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);">System Integration</div>
+        <div class="stat-desc">Connects the tools already in place into a coherent, automated stack.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — Why Now -->
+  <div class="slide" id="s5">
+    <div class="slide-header">
+      <div class="label">Why Now</div>
+      <div class="title-lg">Three forces are<br><span class="italic-highlight">converging right now.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
+      <div class="card card-accent">
+        <div class="numbered-item">
+          <div class="num-badge">01</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">AI Tooling Matured</div>
+            <div class="stat-desc">LLMs, automation platforms, and API infrastructure are now enterprise-grade and affordable. The build cost that was $500k two years ago is under $15k today.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="numbered-item">
+          <div class="num-badge">02</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">Compliance Pressure is Rising</div>
+            <div class="stat-desc">SEC oversight of RIAs has intensified. Firms need documented, auditable workflows. Manual ops won't hold up under scrutiny.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="numbered-item">
+          <div class="num-badge">03</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">AUM Consolidation Favors Operators</div>
+            <div class="stat-desc">Larger IBDs and RIA aggregators are buying independent firms. To compete, independents need institutional-grade infrastructure without the headcount.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 — Market -->
+  <div class="slide" id="s6">
+    <div class="slide-header">
+      <div class="label">Market Opportunity</div>
+      <div class="title-lg">15,000 firms.<br><span class="italic-highlight">Almost none automated.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-3" style="margin-bottom:20px;">
+      <div class="card card-accent" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+        <div class="stat-num">15,400</div>
+        <div class="stat-label">Qualified RIAs</div>
+        <div class="stat-desc">$50M–$500M AUM range (SEC IAPD)</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+        <div class="stat-num">$840M+</div>
+        <div class="stat-label">Serviceable Market</div>
+        <div class="stat-desc">At average $4,500/mo per firm</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+        <div class="stat-num">$4.5M</div>
+        <div class="stat-label">ARR Target — Year 3</div>
+        <div class="stat-desc">150 clients by year three</div>
+      </div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,rgba(108,142,255,0.07),rgba(167,139,250,0.05));">
+      <div class="label" style="margin-bottom:10px;">Bottom-Up Logic</div>
+      <div style="font-size:15px;color:rgba(240,240,248,0.85);line-height:1.7;">
+        <strong>150 clients × $2,500/mo × 12 months = $4.5M ARR</strong><br>
+        Plus $5k setup fees per new client. Achievable with 2 AEs and the outreach infrastructure already in place.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 — Product -->
+  <div class="slide" id="s7">
+    <div class="slide-header">
+      <div class="label">Product</div>
+      <div class="title-lg">We build it. We run it.<br><span class="italic-highlight">They grow.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
+      <div class="card card-accent">
+        <div class="phase">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <div class="phase-title">Systems Audit — Week 1–2</div>
+            <div class="phase-text">Map existing tools, workflows, and bottlenecks. Identify the 3 highest-ROI automation targets.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="phase">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <div class="phase-title">Infrastructure Build — Week 3–6</div>
+            <div class="phase-text">Build CRM architecture, automations, and integrations. Full implementation, not a demo.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="phase">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <div class="phase-title">Live Operations — Monthly</div>
+            <div class="phase-text">Ongoing management, optimization, and expansion. We run it. They never touch it.</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <span class="pill">GoHighLevel</span>
+        <span class="pill">Custom AI Layers</span>
+        <span class="pill">Full Audit Trail</span>
+        <span class="pill">SEC Compliant</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 — Business Model -->
+  <div class="slide" id="s8">
+    <div class="slide-header">
+      <div class="label">Business Model</div>
+      <div class="title-lg">Two-part pricing.<br><span class="italic-highlight">High retention by design.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="card card-accent" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="stat-label" style="color:var(--accent);">Setup Fee</div>
+        <div style="font-size:38px;font-weight:900;letter-spacing:-0.02em;color:var(--text);">$5,000</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);">One-Time</div>
+        <div class="stat-desc">Covers audit, full infrastructure build, and onboarding. Collected before work begins.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="stat-label" style="color:var(--accent);">Monthly Retainer</div>
+        <div style="font-size:38px;font-weight:900;letter-spacing:-0.02em;color:var(--text);">$2,500<span style="font-size:18px;font-weight:600;color:var(--muted);">+</span></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);">Recurring</div>
+        <div class="stat-desc">Scales with firm size. Average 24-month retention window.</div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
+        <div class="stat-num" style="font-size:28px;">$60,000</div>
+        <div class="stat-label">Average LTV</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
+        <div class="stat-num" style="font-size:28px;">~$1,200</div>
+        <div class="stat-label">Estimated CAC</div>
+      </div>
+      <div class="card card-accent" style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
+        <div class="stat-num" style="font-size:28px;">50:1</div>
+        <div class="stat-label">LTV:CAC Ratio</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9 — Traction -->
+  <div class="slide" id="s9">
+    <div class="slide-header">
+      <div class="label">Traction</div>
+      <div class="title-lg">Infrastructure is live.<br><span class="italic-highlight">Pipeline is building.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div style="flex:1;">
+      <ul class="check-list">
+        <li><div><strong>CRM & Automation:</strong> Full GoHighLevel infrastructure built and deployed. Proven across real enterprise client engagements.</div></li>
+        <li><div><strong>Lead Database:</strong> SEC IAPD scraper live. 15,400+ qualified RIA leads filtered by AUM band, state, and firm size.</div></li>
+        <li><div><strong>Outbound Infrastructure:</strong> Cold email and LinkedIn outreach sequences built and actively running.</div></li>
+        <li><div><strong>Vertical Lock:</strong> 100% of new business development pointed at the RIA vertical.</div></li>
+        <li><div><strong>Legal Infrastructure:</strong> MSA, SOW templates, and Scheduled Services Agreement finalized. Florida LLC incorporated.</div></li>
+        <li><div><strong>Proven Model:</strong> Past client engagements validated delivery capability. Closing first RIA-specific contracts now.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SLIDE 10 — Team -->
+  <div class="slide" id="s10">
+    <div class="slide-header">
+      <div class="label">Team</div>
+      <div class="title-lg">Operators first.<br><span class="italic-highlight">Builders by necessity.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-2" style="flex:1;">
+      <div class="card card-accent" style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div class="founder-role">CEO & Co-Founder</div>
+          <div class="founder-name">Tucker Haluszczak</div>
+        </div>
+        <div class="divider" style="margin:0;width:32px;"></div>
+        <div class="founder-bio">Directly responsible for company direction, delivery, and operations. Manages client onboarding, ongoing account management, and systems implementation.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div class="founder-role">CRO & Co-Founder</div>
+          <div class="founder-name">Jake</div>
+        </div>
+        <div class="divider" style="margin:0;width:32px;"></div>
+        <div class="founder-bio">Head of all revenue. Multi-business operator across AI, services, and real estate. Licensed real estate agent active in WNY. Anthropic Claude Code certified. Built Lane6's full outbound infrastructure, RIA go-to-market, and every revenue-generating system from scratch.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11 — Ask -->
+  <div class="slide" id="s11">
+    <div class="slide-header">
+      <div class="label">The Ask</div>
+      <div class="title-lg">Raising $350,000 to close<br>our <span class="italic-highlight">first 20 RIA clients.</span></div>
+      <div class="divider"></div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Pre-seed round. 14-month runway to first revenue milestones.</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <div class="alloc-row">
+        <div class="alloc-label">Sales & Outreach</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:45%;background:linear-gradient(90deg,var(--accent),var(--accent2));"></div></div>
+        <div class="alloc-pct">45%</div>
+        <div class="alloc-amt">$157K</div>
+      </div>
+      <div style="font-size:12px;color:var(--dim);padding-left:214px;margin-top:-4px;">AE hire, LinkedIn Recruiter, outbound tooling, data stack</div>
+      <div class="alloc-row" style="margin-top:6px;">
+        <div class="alloc-label">Product & Build</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:30%;background:linear-gradient(90deg,var(--accent2),#ec4899);"></div></div>
+        <div class="alloc-pct">30%</div>
+        <div class="alloc-amt">$105K</div>
+      </div>
+      <div style="font-size:12px;color:var(--dim);padding-left:214px;margin-top:-4px;">GHL infrastructure, AI tooling, delivery capacity</div>
+      <div class="alloc-row" style="margin-top:6px;">
+        <div class="alloc-label">Operations & Legal</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:25%;background:linear-gradient(90deg,var(--accent3),#06b6d4);"></div></div>
+        <div class="alloc-pct">25%</div>
+        <div class="alloc-amt">$88K</div>
+      </div>
+      <div style="font-size:12px;color:var(--dim);padding-left:214px;margin-top:-4px;">Compliance, contractor ops, founder runway</div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,rgba(108,142,255,0.08),rgba(52,211,153,0.05));border-color:rgba(108,142,255,0.2);">
+      <div style="font-size:15px;color:rgba(240,240,248,0.9);line-height:1.7;">
+        <strong>Milestone:</strong> 20 RIA clients at $2,500/mo = <strong style="color:var(--accent3);">$600K ARR</strong>. Breakeven at 12 clients. This raise gets us there and sets up the Series A conversation.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Nav -->
+<div class="nav">
+  <button class="nav-btn" id="prev">&#8592;</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="next">&#8594;</button>
+</div>
+
+<div class="slide-num" id="slideNum">1 / 11</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+  });
+</script>
+</body>
+</html>
